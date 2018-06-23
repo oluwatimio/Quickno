@@ -1,0 +1,107 @@
+{
+  "project_info": {
+    "project_number": "494770738272",
+    "firebase_url": "https://safechat-4ca62.firebaseio.com",
+    "project_id": "safechat-4ca62",
+    "storage_bucket": "safechat-4ca62.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:494770738272:android:3e84151a87f80a05",
+        "android_client_info": {
+          "package_name": "com.safechat.android.safechat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "494770738272-j3bqvqsc2042jnj8rgssnmrum0cki1ps.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.safechat.android.safechat",
+            "certificate_hash": "34d83eab2854c05d7225712eecc50d9766717e84"
+          }
+        },
+        {
+          "client_id": "494770738272-63kthu9tk6d8p000j2f13labdmiv777s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.safechat.android.safechat",
+            "certificate_hash": "f5740dcfc0299b6a55f4fbffd6e4291a82dce93e"
+          }
+        },
+        {
+          "client_id": "494770738272-101vk72at98c7s4hnae39p0trhnorsq2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb0Ai52RbZysGtSEjZhH0x0YxFM3_x-Go"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "494770738272-101vk72at98c7s4hnae39p0trhnorsq2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:494770738272:android:06052474ef3cd6c0",
+        "android_client_info": {
+          "package_name": "com.timiowoturo.oluwatimiowoturo.quickno"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "494770738272-3cv19gbol37k7d3roj8u0iq99ligd8ot.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.timiowoturo.oluwatimiowoturo.quickno",
+            "certificate_hash": "d1d9d774339491db928604b4d9e7be03496d3c52"
+          }
+        },
+        {
+          "client_id": "494770738272-101vk72at98c7s4hnae39p0trhnorsq2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb0Ai52RbZysGtSEjZhH0x0YxFM3_x-Go"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "494770738272-101vk72at98c7s4hnae39p0trhnorsq2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

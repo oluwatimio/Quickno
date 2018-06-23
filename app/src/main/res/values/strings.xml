@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Quickno</string>
+    <string name="title_home">Tutors</string>
+    <string name="title_explore">Explore</string>
+    <string name="title_dashboard">Dashboard</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="title_activity_onboard">OnboardActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+</resources>
