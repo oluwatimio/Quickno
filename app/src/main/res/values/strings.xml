@@ -10,4 +10,5 @@
     <string name="title_activity_onboard">OnboardActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_get_info">GetInfo</string>
 </resources>

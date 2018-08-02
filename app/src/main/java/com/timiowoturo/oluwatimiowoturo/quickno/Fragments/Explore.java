@@ -8,7 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.timiowoturo.oluwatimiowoturo.quickno.Models.Locator;
 import com.timiowoturo.oluwatimiowoturo.quickno.R;
+import com.timiowoturo.oluwatimiowoturo.quickno.Utils.FirestoreService;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +33,7 @@ public class Explore extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    ArrayList<Locator> locators;
 
     public Explore() {
         // Required empty public constructor
@@ -52,15 +57,22 @@ public class Explore extends Fragment {
         return fragment;
     }
 
+    public static Explore newInstance() {
+        Explore fragment = new Explore();
+        return fragment;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
+
+
     }
 
+    public void getCloseUsers(){
+        FirestoreService service = new FirestoreService(true);
+        this.locators = service.locators;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

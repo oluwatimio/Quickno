@@ -1,9 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Onboarding">
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/userWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sample"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"/>
+
+    <ImageView
+        android:id="@+id/welcomeEmoji"
+        android:layout_below="@+id/userWelcome"
+        android:layout_width="100dp"
+        android:layout_height="120dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/wavinghand"/>
+
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/welcomeEmoji"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:layout_marginLeft="5dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/black"
+        android:text="We would like to kno a bit about you so we can find people seeking Quickno's from you!"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="userInfo"/>
+</RelativeLayout>

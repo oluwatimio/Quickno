@@ -52,6 +52,11 @@ public class DashBoard extends Fragment {
         return fragment;
     }
 
+    public static DashBoard newInstance() {
+        DashBoard fragment = new DashBoard();
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
