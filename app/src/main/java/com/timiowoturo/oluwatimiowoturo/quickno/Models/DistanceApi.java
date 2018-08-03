@@ -5,14 +5,14 @@ public class DistanceApi {
     public DistanceApi(Direction direction){
         this.direction = direction;
 
-        makeRequest();
+        //makeRequest();
     }
 
 
-    public String makeRequest(){
-        String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=" +
-        "Washington,DC&destinations=New+York+City,NY&key=YOUR_API_KEY";
-    }
+//    public String makeRequest(){
+//        String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=" +
+//        "Washington,DC&destinations=New+York+City,NY&key=YOUR_API_KEY";
+//    }
 
 
 }

@@ -23,19 +23,12 @@ import com.timiowoturo.oluwatimiowoturo.quickno.Models.User;
 import java.util.ArrayList;
 
 public class FirestoreService {
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final String TAG = FirestoreService.class.getSimpleName();
     private User cUser;
-    public ArrayList<Locator> locators;
+    public ArrayList<Locator> locators = new ArrayList<>();
     public FirestoreService(){
-    }
-
-    public FirestoreService(boolean val){
-        this.locators = new ArrayList<>();
-        if (val == true){
-            getLocators();
-        }
     }
     public void addUser(String name,String uid, ArrayList<Quickno> quicknos){
 
@@ -47,12 +40,6 @@ public class FirestoreService {
                 Log.d(TAG, "Failure" + e);
             }
         });
-//        db.collection("Users").add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-//            @Override
-//            public void onSuccess(DocumentReference documentReference) {
-//                Log.d(TAG, "User added with id: " + documentReference.getId());
-//            }
-//        });
     }
     public void getCurrentUser() {
         mAuth = FirebaseAuth.getInstance();
@@ -80,26 +67,5 @@ public class FirestoreService {
         Locator locator = new Locator(mAuth.getCurrentUser().getUid(), lat, lng);
         db.collection("CurrentUserLocations").document(mAuth.getCurrentUser().getUid())
                 .set(locator);
-    }
-
-    public void getLocators(){
-        final ArrayList<Locator> locators = new ArrayList<>();
-        this.locators = locators;
-        db.collection("cities")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value,
-                                        @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen failed.", e);
-                            return;
-                        }
-                        for (QueryDocumentSnapshot doc : value) {
-                            Locator locator = (Locator) doc.getData();
-                            locators.add(locator);
-                        }
-                        Log.d(TAG, "Current locators: " + locators);
-                    }
-                });
     }
 }

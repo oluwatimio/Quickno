@@ -6,6 +6,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -32,8 +33,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.timiowoturo.oluwatimiowoturo.quickno.Models.Locator;
 import com.timiowoturo.oluwatimiowoturo.quickno.R;
 import com.timiowoturo.oluwatimiowoturo.quickno.Utils.FirestoreService;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -60,6 +68,7 @@ public class Home extends Fragment implements OnMapReadyCallback {
     private PlaceDetectionClient mPlaceDClient;
     public static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION =1;
     private FusedLocationProviderClient mFusedLocationClient;
+    ArrayList<Locator> locators = new ArrayList<>();
 
     private FirebaseAuth mAuth;
 
@@ -193,6 +202,27 @@ public class Home extends Fragment implements OnMapReadyCallback {
                             FirestoreService service = new FirestoreService();
                             service.writeUserLocation(location.getLatitude(), location.getLongitude());
                             Toast.makeText(getContext(), "Your Quickno's location has been saved", Toast.LENGTH_LONG).show();
+                            // Getting every user's location on the map.
+                            service.db.collection("CurrentUserLocations")
+                                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onEvent(@Nullable QuerySnapshot value,
+                                                            @Nullable FirebaseFirestoreException e) {
+                                            if (e != null) {
+                                                Log.w(TAG, "Listen failed.", e);
+                                                return;
+                                            }
+                                            for (QueryDocumentSnapshot doc : value) {
+                                                Locator locator = new Locator((String) doc.getData().get("uid"),
+                                                        (Double) doc.getData().get("lat"),
+                                                        (Double) doc.getData().get("lng"));
+                                                locators.add(locator);
+                                            }
+                                            Log.d(TAG, "Current locators: " + locators);
+                                            // Adding markers for all locations
+                                            plotLocations();
+                                        }
+                                    });
                         }
                     });
         } else {
@@ -218,8 +248,7 @@ public class Home extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    public void plotLocations(){
 
-
-
-
+    }
 }
