@@ -6,6 +6,10 @@ import android.os.Parcelable;
 // Subjects are called Quickno's
 public class Quickno implements Parcelable {
     private String tag;
+
+    public Quickno(){
+
+    }
     public Quickno(String tag){
         this.tag = tag;
     }

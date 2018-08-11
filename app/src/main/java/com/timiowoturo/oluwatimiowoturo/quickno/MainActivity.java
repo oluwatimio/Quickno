@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements Home.OnFragmentIn
                 return super.onOptionsItemSelected(item);
 
             case R.id.profile:
-                Fragment profilef = DashBoard.newInstance();
+                Fragment profilef = Explore.newInstance();
                 if (currentFragment != profilef){
                     transaction = getSupportFragmentManager().beginTransaction();
                     currentFragment = profilef;

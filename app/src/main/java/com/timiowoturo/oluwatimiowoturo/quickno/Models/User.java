@@ -9,6 +9,10 @@ public class User implements Parcelable {
     private String name;
     private String uid;
     private ArrayList<Quickno> quicknos;
+
+    public User(){
+
+    }
     public User(String name, String uid, ArrayList<Quickno> quicknos) {
         this.name = name;
         this.uid = uid;
