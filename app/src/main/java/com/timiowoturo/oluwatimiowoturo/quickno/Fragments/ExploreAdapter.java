@@ -12,10 +12,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.timiowoturo.oluwatimiowoturo.quickno.Models.User;
 import com.timiowoturo.oluwatimiowoturo.quickno.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.ViewHolder> {
     Context mContext;
@@ -71,7 +77,24 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.ViewHold
             this.getQuickno.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(mContext, "Button Clicked", Toast.LENGTH_LONG).show();
+                    FirebaseUser user1 = FirebaseAuth.getInstance().getCurrentUser();
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    if (user != null){
+                        Toast.makeText(mContext, user.getUid() + user1.getUid(), Toast.LENGTH_LONG).show();
+                        Map<String, Object> structure = new HashMap<>();
+                        structure.put("User Requesting", user1.getUid());
+                        structure.put("User Receiving", user.getUid());
+                        db.collection("messages").document(user.getUid()+user1.getUid()).set(structure)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(mContext, "User has been notified", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                    }
+                    else{
+
+                    }
                 }
             });
         }

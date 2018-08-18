@@ -71,9 +71,7 @@ public class GetInfo extends AppCompatActivity {
         chip.setTextAppearanceResource(R.style.ChipTextStyle);
 
         chipGroup.addView(chip);
-
         mAuth = FirebaseAuth.getInstance();
-
         Quickno quickno = new Quickno(editText.getText().toString());
         quicknos.add(quickno);
 
@@ -84,15 +82,11 @@ public class GetInfo extends AppCompatActivity {
         Snackbar.make(view, "Your quickno's have been saved", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
         Toast.makeText(this, "Your quickno's have been saved", Toast.LENGTH_LONG).show();
-
         try{
             wait(1000);
         } catch (Exception e){
 
         }
-
-
-
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

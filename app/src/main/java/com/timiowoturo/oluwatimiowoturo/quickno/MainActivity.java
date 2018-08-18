@@ -1,10 +1,12 @@
 package com.timiowoturo.oluwatimiowoturo.quickno;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -17,14 +19,25 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.timiowoturo.oluwatimiowoturo.quickno.Fragments.DashBoard;
 import com.timiowoturo.oluwatimiowoturo.quickno.Fragments.Explore;
 import com.timiowoturo.oluwatimiowoturo.quickno.Fragments.Home;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 public class MainActivity extends AppCompatActivity implements Home.OnFragmentInteractionListener,
         DashBoard.OnFragmentInteractionListener, Explore.OnFragmentInteractionListener {
@@ -34,17 +47,16 @@ public class MainActivity extends AppCompatActivity implements Home.OnFragmentIn
     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
     Fragment currentFragment;
     private FirebaseAuth mAuth;
+    Context context = this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
-
 //        mTextMessage = (TextView) findViewById(R.id.message);
 //        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
 //        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
         mAuth = FirebaseAuth.getInstance();
     }
 
@@ -61,36 +73,27 @@ public class MainActivity extends AppCompatActivity implements Home.OnFragmentIn
         switch (item.getItemId()) {
             case R.id.menuhome:
                 Fragment homef = Home.newInstance();
-                if (currentFragment != homef){
                     transaction = getSupportFragmentManager().beginTransaction();
-                    currentFragment = homef;
                     transaction.replace(R.id.fragContainer, homef);
                     transaction.addToBackStack(null);
                     transaction.commit();
-                }
                 return true;
             case R.id.app_bar_search:
                 Fragment searchf = Explore.newInstance();
-                if (currentFragment != searchf){
                     transaction = getSupportFragmentManager().beginTransaction();
-                    currentFragment = searchf;
                     transaction.replace(R.id.fragContainer, searchf);
                     transaction.addToBackStack(null);
                     transaction.commit();
-                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
 
             case R.id.profile:
                 Fragment profilef = Explore.newInstance();
-                if (currentFragment != profilef){
                     transaction = getSupportFragmentManager().beginTransaction();
-                    currentFragment = profilef;
                     transaction.replace(R.id.fragContainer, profilef);
                     transaction.addToBackStack(null);
                     transaction.commit();
-                }
                 return true;
         }
     }
@@ -103,17 +106,11 @@ public class MainActivity extends AppCompatActivity implements Home.OnFragmentIn
         }
 
         else{
-
-            if (currentFragment == null){
-                Fragment tutors = Home.newInstance();
-                currentFragment = tutors;
-                transaction.replace(R.id.fragContainer, tutors);
-                transaction.commit();
-            }
-
-            else{
-                transaction.show(currentFragment);
-            }
+            checkDbRequests();
+            Fragment tutors = Home.newInstance();
+            currentFragment = tutors;
+            transaction.replace(R.id.fragContainer, tutors);
+            transaction.commit();
         }
     }
     //Firebase Auth Stuff
@@ -141,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements Home.OnFragmentIn
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                // Starting onboarding activity with intent and startActivity()
                 Intent intent = new Intent(this, Onboarding.class);
                 startActivity(intent);
             } else { Log.d(LOG_TAG, resultCode+"Sign in unsucessful"); } } }
@@ -157,5 +155,28 @@ public class MainActivity extends AppCompatActivity implements Home.OnFragmentIn
     protected void onDestroy() {
         super.onDestroy();
         transaction.detach(currentFragment);
+    }
+
+    public void checkDbRequests(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("messages")
+                .whereEqualTo("User Requesting", FirebaseAuth.getInstance().getCurrentUser().getUid()).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    return;
+                }
+
+                else{
+                    for (QueryDocumentSnapshot doc : value) {
+                        if (doc.get("User Requesting") != null) { //Change it back to User Receiving.
+                            Snackbar mySnackbar = Snackbar.make(findViewById(R.id.container),
+                                    "A user needs your help " + doc.getString("User Requesting"), Snackbar.LENGTH_SHORT);
+                            mySnackbar.show();
+                        }
+                    }
+                }
+            }
+        });
     }
 }
