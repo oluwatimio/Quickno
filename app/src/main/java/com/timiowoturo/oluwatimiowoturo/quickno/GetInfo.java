@@ -22,6 +22,7 @@ import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.Places;
 import com.google.firebase.auth.FirebaseAuth;
 import com.timiowoturo.oluwatimiowoturo.quickno.Models.Quickno;
+import com.timiowoturo.oluwatimiowoturo.quickno.Models.UserRating;
 import com.timiowoturo.oluwatimiowoturo.quickno.Utils.FirestoreService;
 
 import java.util.ArrayList;
@@ -78,7 +79,10 @@ public class GetInfo extends AppCompatActivity {
     }
 
     public void uploadUser(View view){
-        firestoreS.addUser(mAuth.getCurrentUser().getDisplayName(),mAuth.getCurrentUser().getUid(),quicknos);
+        UserRating rating = new UserRating(mAuth.getCurrentUser().getUid(), 0.0);
+        firestoreS.addUser(mAuth.getCurrentUser().getDisplayName(),mAuth.getCurrentUser().getUid(),quicknos,
+                FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString(),
+                rating);
         Snackbar.make(view, "Your quickno's have been saved", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
         Toast.makeText(this, "Your quickno's have been saved", Toast.LENGTH_LONG).show();

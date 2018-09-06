@@ -1,5 +1,6 @@
 package com.timiowoturo.oluwatimiowoturo.quickno.Utils;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -19,6 +20,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.timiowoturo.oluwatimiowoturo.quickno.Models.Locator;
 import com.timiowoturo.oluwatimiowoturo.quickno.Models.Quickno;
 import com.timiowoturo.oluwatimiowoturo.quickno.Models.User;
+import com.timiowoturo.oluwatimiowoturo.quickno.Models.UserRating;
 
 import java.util.ArrayList;
 
@@ -30,9 +32,9 @@ public class FirestoreService {
     public ArrayList<Locator> locators = new ArrayList<>();
     public FirestoreService(){
     }
-    public void addUser(String name,String uid, ArrayList<Quickno> quicknos){
+    public void addUser(String name, String uid, ArrayList<Quickno> quicknos, String url, UserRating rating){
 
-        User user = new User(name,uid, quicknos);
+        User user = new User(name,uid, quicknos, url, rating);
 
         db.collection("Users").document(uid).set(user).addOnFailureListener(new OnFailureListener() {
             @Override

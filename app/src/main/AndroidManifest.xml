@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.timiowoturo.oluwatimiowoturo.quickno">
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -11,6 +11,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
@@ -24,9 +28,13 @@
         <activity
             android:name=".GetInfo"
             android:label="@string/title_activity_get_info"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAb0Ai52RbZysGtSEjZhH0x0YxFM3_x-Go"/>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAb0Ai52RbZysGtSEjZhH0x0YxFM3_x-Go" />
+
+        <activity android:name=".MessageActivity"></activity>
     </application>
 
 </manifest>

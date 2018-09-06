@@ -6,22 +6,31 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnKeyListener;
+import android.view.KeyEvent;
+import android.widget.EditText;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.timiowoturo.oluwatimiowoturo.quickno.Models.Locator;
 import com.timiowoturo.oluwatimiowoturo.quickno.Models.Quickno;
 import com.timiowoturo.oluwatimiowoturo.quickno.Models.User;
@@ -29,6 +38,7 @@ import com.timiowoturo.oluwatimiowoturo.quickno.R;
 import com.timiowoturo.oluwatimiowoturo.quickno.Utils.FirestoreService;
 
 import java.util.ArrayList;
+import java.util.zip.Inflater;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,6 +61,7 @@ public class Explore extends Fragment {
     private String mParam2;
 
     FirestoreService service = new FirestoreService();
+    public final ArrayList<User> usersQueried = new ArrayList<>();
 
     private OnFragmentInteractionListener mListener;
     ArrayList<Locator> locators = new ArrayList<>();
@@ -59,6 +70,7 @@ public class Explore extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+
 
     private ArrayList<User> dataSet = new ArrayList<>();
 
@@ -88,12 +100,38 @@ public class Explore extends Fragment {
         Explore fragment = new Explore();
         return fragment;
     }
+
+    public void doMySearch(final String string){
+        final ArrayList<User> users = new ArrayList<>();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Users")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                User user = document.toObject(User.class);
+                                users.add(user);
+                            }
+
+                            for(int i = 0; i< users.size(); i++){
+                                for (int j = 0; j < users.get(i).getQuicknos().size(); j++){
+                                    if (users.get(i).getQuicknos().get(j).getTag().equals(string)){
+                                        usersQueried.add(users.get(i));
+                                    }
+                                }
+                            }
+                        } else {
+                        }
+                    }
+                });
+
+
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ArrayList<Quickno> sa = new ArrayList<>();
-        sa.add(new Quickno("no"));
-        dataSet.add(new User("hey", "no", sa));
         service.db.collection("CurrentUserLocations")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -149,31 +187,14 @@ public class Explore extends Fragment {
 
     //Getting close users from db to display in recycler view
     public void getUsers(){
-        for (int i = 0; i < sortedLocators.size(); i++){
-            service.db.collection("Users").document(sortedLocators.get(i).getUid())
-                    .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            User user = document.toObject(User.class);
-                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                            dataSet.add(user);
-                        } else {
-                            Log.d(TAG, "No such document");
-                        }
-                    } else {
-                        Log.d(TAG, "get failed with ", task.getException());
-                    }
-                    layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-                    adapter = new ExploreAdapter(getContext(), dataSet);
-                    recyclerView = getView().findViewById(R.id.recyclerExplore);
-                    recyclerView.setHasFixedSize(true);
-                    recyclerView.setLayoutManager(layoutManager);
-                    recyclerView.setAdapter(adapter);
-                }
-            });
+        layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+        adapter = new ExploreAdapter(getContext(), usersQueried);
+
+        if (getView() != null){
+            recyclerView = getView().findViewById(R.id.recyclerExplore);
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(adapter);
         }
     }
     @Override
@@ -181,7 +202,19 @@ public class Explore extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         // Setting recycler view
-        View rootView = inflater.inflate(R.layout.fragment_explore, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_explore, container, false);
+        final EditText search = rootView.findViewById(R.id.searchView);
+
+        search.setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if ((keyEvent.getAction() == keyEvent.ACTION_DOWN) &&( i == KeyEvent.KEYCODE_ENTER)){
+                    doMySearch(search.getText().toString());
+                    return true;
+                }
+                return false;
+            }
+        });
         return rootView;
     }
 

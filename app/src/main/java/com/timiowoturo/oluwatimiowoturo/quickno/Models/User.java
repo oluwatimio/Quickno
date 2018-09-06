@@ -1,5 +1,6 @@
 package com.timiowoturo.oluwatimiowoturo.quickno.Models;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,15 +10,20 @@ public class User implements Parcelable {
     private String name;
     private String uid;
     private ArrayList<Quickno> quicknos;
+    public UserRating rating;
+    public String photoUrl;
 
     public User(){
 
     }
-    public User(String name, String uid, ArrayList<Quickno> quicknos) {
+    public User(String name, String uid, ArrayList<Quickno> quicknos, String url, UserRating rating) {
         this.name = name;
         this.uid = uid;
         this.quicknos = quicknos;
+        this.rating = rating;
+        this.photoUrl = url;
     }
+
     public String getName() {
         return name;
     }

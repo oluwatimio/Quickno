@@ -25,7 +25,7 @@
         android:layout_below="@id/imageView2"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:text="Shriya Gundala"
+        android:text="User Name"
         android:textColor="@color/black"
         android:textSize="25sp" />
 
@@ -36,9 +36,9 @@
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:text="Rating: "
+        android:text="Rating:"
         android:textColor="@color/black"
-        android:textSize="20sp" />
+        android:textSize="20sp"/>
 
     <android.support.design.chip.ChipGroup
         android:layout_centerHorizontal="true"

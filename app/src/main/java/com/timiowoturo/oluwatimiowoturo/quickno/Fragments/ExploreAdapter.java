@@ -1,6 +1,7 @@
 package com.timiowoturo.oluwatimiowoturo.quickno.Fragments;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -47,10 +50,18 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.ViewHold
         String quicknos = "";
         for (int i = 0; i < currentBindUser.getQuicknos().size(); i++){
             String hh = currentBindUser.getQuicknos().get(i).getTag();
-            quicknos = quicknos + hh + ", ";
+            if (i != currentBindUser.getQuicknos().size() - 1){
+                quicknos = quicknos + hh + ", ";
+            } else{
+                quicknos = quicknos + hh;
+            }
         }
         holder.userQuicknos.setText(quicknos);
         holder.user = currentBindUser;
+
+        Glide.with(holder.v.getContext())
+                .load(Uri.parse(currentBindUser.photoUrl)).apply(RequestOptions.circleCropTransform())
+                .into(holder.userImage);
 
         // Image set next
     }
@@ -67,6 +78,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.ViewHold
         ImageView userImage;
         Button getQuickno;
         User user;
+        View v;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.userName = itemView.findViewById(R.id.userName);
@@ -74,10 +86,11 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.ViewHold
             this.userImage = itemView.findViewById(R.id.imageView);
             this.getQuickno = itemView.findViewById(R.id.getQuickno);
             this.user = null;
+            v = itemView;
             this.getQuickno.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    FirebaseUser user1 = FirebaseAuth.getInstance().getCurrentUser();
+                    FirebaseUser user1 = FirebaseAuth.getInstance().getCurrentUser(); // requested
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
                     if (user != null){
                         Toast.makeText(mContext, user.getUid() + user1.getUid(), Toast.LENGTH_LONG).show();

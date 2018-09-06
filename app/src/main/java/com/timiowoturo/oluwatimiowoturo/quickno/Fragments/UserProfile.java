@@ -3,12 +3,29 @@ package com.timiowoturo.oluwatimiowoturo.quickno.Fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.chip.Chip;
+import android.support.design.chip.ChipGroup;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.timiowoturo.oluwatimiowoturo.quickno.Models.User;
 import com.timiowoturo.oluwatimiowoturo.quickno.R;
+
+import org.w3c.dom.Text;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +40,9 @@ public class UserProfile extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    public String userName;
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -52,6 +72,11 @@ public class UserProfile extends Fragment {
         return fragment;
     }
 
+    public static UserProfile newInstance(){
+        UserProfile fragment = new UserProfile();
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,14 +84,56 @@ public class UserProfile extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        this.userName = user.getDisplayName();
+
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_profile, container, false);
-    }
+        View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
+        TextView userName = view.findViewById(R.id.textView);
+        final TextView rating = view.findViewById(R.id.Rating);
+        userName.setText(this.userName);
+        ImageView userImage = view.findViewById(R.id.imageView2);
+        Glide.with(getContext())
+                .load(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl()).apply(RequestOptions.circleCropTransform())
+                .into(userImage);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final ChipGroup chipGroup = (ChipGroup) view.findViewById(R.id.chipsProfile);
+        db.collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                User user = document.toObject(User.class);
+                                rating.setText(rating.getText() + " " + user.rating.toString());
+                                for (int i = 0; i < user.getQuicknos().size(); i++){
+                                    Chip chip = new Chip(getContext());
+
+                                    chip.setChipText(user.getQuicknos().get(i).getTag());
+                                    chip.setChipBackgroundColorResource(R.color.colorAccent);
+                                    chip.setTextAppearanceResource(R.style.ChipTextStyle);
+                                    chipGroup.addView(chip);
+                                }
+                            } else {
+                            }
+                        } else {
+                        }
+                    }
+                });
+        return view;
+
+        }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
