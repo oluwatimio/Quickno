@@ -11,14 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/linearLayout">
-
     </android.support.v7.widget.RecyclerView>
-
-    <!--<EditText-->
-        <!--android:id="@+id/messageSending"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignParentBottom="true" />-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,13 +30,17 @@
             android:layout_weight="1" />
 
         <Button
-            android:layout_width="80dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="SEND" />
+            android:layout_marginRight="5dp"
+            android:onClick="sendMessage"
+            android:background="@drawable/roundedbutton"/>
         <Button
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="right" />
+            android:layout_gravity="right"
+            android:background = "@drawable/roundedbutton"
+            android:onClick="getDirections"/>
     </LinearLayout>
 </RelativeLayout>

@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements Home.OnFragmentIn
 
         else{
             checkDbRequests();
+            checkDBMessages();
 
             if (currentFragment == null){
                 transaction = getSupportFragmentManager().beginTransaction();
@@ -180,15 +181,46 @@ public class MainActivity extends AppCompatActivity implements Home.OnFragmentIn
                     return;
                 } else{
                     for (QueryDocumentSnapshot doc : value) {
-                        final String docs = doc.getString("User Requesting")
+                        final String docs = doc.getString("User Requesting");
                         if (doc.get("User Requesting") != null) { //Other users are requesting
                             Snackbar mySnackbar = Snackbar.make(findViewById(R.id.container),
-                                    "A user needs your help", Snackbar.LENGTH_LONG);
+                                    "A user needs your help", Snackbar.LENGTH_INDEFINITE);
                             mySnackbar.setAction("OPEN", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
                                     Intent intent = new Intent(contexts, MessageActivity.class);
                                     intent.putExtra("Requesting", docs);
+                                    startActivity(intent);
+                                }
+                            });
+                            mySnackbar.show();
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+    public void checkDBMessages(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("message")
+                .whereEqualTo("requesting", FirebaseAuth.getInstance().getCurrentUser().getUid()).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) { //I am the one receiving
+                if (e != null) {
+                    return;
+                } else{
+                    for (QueryDocumentSnapshot doc : value) {
+                        final String docs = doc.getString("receiving");
+                        if (doc.get("receiving") != null) { //Other users are requesting
+                            Snackbar mySnackbar = Snackbar.make(findViewById(R.id.container),
+                                    "Your tutor messaged you", Snackbar.LENGTH_INDEFINITE);
+                            mySnackbar.setAction("OPEN", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent intent = new Intent(contexts, MessageActivity.class);
+                                    intent.putExtra("Receiving", docs);
                                     startActivity(intent);
                                 }
                             });

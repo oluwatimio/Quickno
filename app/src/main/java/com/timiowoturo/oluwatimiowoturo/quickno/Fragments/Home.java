@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +29,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -35,13 +38,20 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.JsonArray;
 import com.timiowoturo.oluwatimiowoturo.quickno.Models.Locator;
 import com.timiowoturo.oluwatimiowoturo.quickno.R;
+import com.timiowoturo.oluwatimiowoturo.quickno.Utils.DirectionsDownloader;
 import com.timiowoturo.oluwatimiowoturo.quickno.Utils.FirestoreService;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -74,25 +84,24 @@ public class Home extends Fragment implements OnMapReadyCallback {
 
     public  GoogleMap mMap;
     public MapView mapView;
+    ArrayList<Locator> usersL;
     public Home() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Home.
-     */
+    public Home (ArrayList<Locator> lsu){
+        this.usersL = lsu;
+
+
+        new DownloadFilesTask().execute("https://maps.googleapis.com/maps/api/directions/json?origin=" +
+                String.valueOf(lsu.get(1).getLat()) + "," + String.valueOf(lsu.get(1).getLng())+ "&destination=" +
+                String.valueOf(lsu.get(0).getLat()) + "," + String.valueOf(lsu.get(0).getLng()) + "&mode=driving&key=AIzaSyAb0Ai52RbZysGtSEjZhH0x0YxFM3_x-Go");
+
+    }
+
     // TODO: Rename and change types and number of parameters
-    public static Home newInstance(String param1, String param2) {
-        Home fragment = new Home();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+    public static Home newInstance(ArrayList<Locator> locatorsusers) {
+        Home fragment = new Home(locatorsusers);
         return fragment;
     }
 
@@ -201,7 +210,7 @@ public class Home extends Fragment implements OnMapReadyCallback {
                             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                             FirestoreService service = new FirestoreService();
                             service.writeUserLocation(location.getLatitude(), location.getLongitude());
-                            Toast.makeText(getContext(), "Your Quickno's location has been saved", Toast.LENGTH_LONG).show();
+                            //Toast.makeText(getContext(), "Your Quickno's location has been saved", Toast.LENGTH_LONG).show();
                             // Getting every user's location on the map.
                             service.db.collection("CurrentUserLocations")
                                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -250,5 +259,102 @@ public class Home extends Fragment implements OnMapReadyCallback {
 
     public void plotLocations(){
 
+    }
+
+    private class DownloadFilesTask extends AsyncTask<String, Void, String> {
+
+        DirectionsDownloader download;
+
+        protected String doInBackground(String... url) {
+
+            download = new DirectionsDownloader(url[0]);
+
+            return download.getData();
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+        }
+        protected void onPostExecute(String result) {
+            try{
+                PolylineOptions options = new PolylineOptions();
+                JSONObject directionsObject = new JSONObject(download.getData());
+                Log.d(TAG, "Current object: " + directionsObject);
+                ArrayList<LatLng> points = new ArrayList<>();
+                JSONArray LEGS = directionsObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs");
+                JSONArray steps = LEGS.getJSONObject(0).getJSONArray("steps");
+
+
+//                for (int i = 0; i < steps.length(); i++){
+//                    points.add(new LatLng(Double.parseDouble(steps.getJSONObject(i).getJSONObject("start_location").getString("lat")),
+//                            Double.parseDouble(steps.getJSONObject(i).getJSONObject("start_location").getString("lng"))));
+//
+//                }
+
+
+
+
+
+                String polyline = directionsObject.getJSONArray("routes").getJSONObject(0).
+                        getJSONObject("overview_polyline").getString("points");
+//                options.addAll(points);
+//                options.width(5);
+//                options.color(R.color.colorPrimary);
+
+                List<LatLng> list = decodePoly(polyline);
+
+//                mMap.addPolyline(decodePoly(polyline));
+
+                for (int z = 0; z < list.size() - 1; z++) {
+                    LatLng src = list.get(z);
+                    LatLng dest = list.get(z + 1);
+                    Polyline line = mMap.addPolyline(new PolylineOptions().add(new LatLng(src.latitude, src.longitude), new LatLng(dest.latitude, dest.longitude)).width(4).color(R.color.colorPrimary).geodesic(true));
+                }
+
+                Log.d(TAG,"polyline");
+
+
+                mMap.addMarker( new MarkerOptions()
+                .position(new LatLng(usersL.get(0).getLat(), usersL.get(0).getLng()))
+                        .title("Requester"));
+
+            } catch (Exception e){
+                Log.d(TAG,"Catch in onPostExecute");
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            //Log.d(TAG, "Data: " + productList.size());
+        }
+
+        private List<LatLng> decodePoly(String encoded) {
+
+            List<LatLng> poly = new ArrayList<LatLng>();
+            int index = 0, len = encoded.length();
+            int lat = 0, lng = 0;
+
+            while (index < len) {
+                int b, shift = 0, result = 0;
+                do {
+                    b = encoded.charAt(index++) - 63;
+                    result |= (b & 0x1f) << shift;
+                    shift += 5;
+                } while (b >= 0x20);
+                int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+                lat += dlat;
+
+                shift = 0;
+                result = 0;
+                do {
+                    b = encoded.charAt(index++) - 63;
+                    result |= (b & 0x1f) << shift;
+                    shift += 5;
+                } while (b >= 0x20);
+                int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+                lng += dlng;
+
+                LatLng p = new LatLng((((double) lat / 1E5)), (((double) lng / 1E5)));
+                poly.add(p);
+            }
+
+            return poly;
+        }
     }
 }

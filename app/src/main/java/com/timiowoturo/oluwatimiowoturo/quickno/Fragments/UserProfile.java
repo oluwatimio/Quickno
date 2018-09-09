@@ -116,10 +116,9 @@ public class UserProfile extends Fragment {
                             DocumentSnapshot document = task.getResult();
                             if (document.exists()) {
                                 User user = document.toObject(User.class);
-                                rating.setText(rating.getText() + " " + user.rating.toString());
+                                rating.setText(rating.getText() + " " + String.valueOf(user.rating.getRating()));
                                 for (int i = 0; i < user.getQuicknos().size(); i++){
                                     Chip chip = new Chip(getContext());
-
                                     chip.setChipText(user.getQuicknos().get(i).getTag());
                                     chip.setChipBackgroundColorResource(R.color.colorAccent);
                                     chip.setTextAppearanceResource(R.style.ChipTextStyle);
